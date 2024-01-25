@@ -1,0 +1,12 @@
+{
+  "charts": [
+    { "id": "1", "title": "Chart1" },
+    { "id": "2", "title": "Chart2" },
+    { "id": "3", "title": "Chart3" },
+    { "id": "4", "title": "Chart4" },
+    { "id": "5", "title": "Chart5" },
+    { "id": "6", "title": "Chart6" },
+    { "id": "7", "title": "Chart7" },
+    { "id": "8", "title": "Chart8" }
+  ]
+}
