@@ -1,21 +1,34 @@
 import { createBrowserRouter } from "react-router-dom";
-import GraphControl from "../graphControl/graph";
-import UploadPicture from "../uploadPicture/uploadPicture";
 import Home from "../home/home";
+import ErrorPage from "../error/error";
+import Layout from "../layouts/Layout";
+import GraphControl from "../graphControl/graph";
 
-const configRouter = [
+const routesConfigs = [
   {
     path: "/",
-    element: <Home />,
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "home",
+        element: <Home />,
+      },
+      {
+        path: "home",
+        children: [
+          {
+            path: "graph",
+            element: <GraphControl />,
+          },
+        ],
+      },
+    ],
   },
   {
-    path: "/graph",
-    element: <GraphControl />,
-  },
-  {
-    path: "/upload",
-    element: <UploadPicture />,
+    path: "error",
+    element: <ErrorPage />,
   },
 ];
-const router = createBrowserRouter(configRouter);
+const router = createBrowserRouter(routesConfigs);
 export default router;
