@@ -1,11 +1,9 @@
 import React from "react";
-import Content from "./Content";
-import Header from "./Header";
+import { Outlet } from "react-router-dom";
 export default function Layout() {
   return (
     <>
-      <Header />
-      <Content />
+      <Outlet />
     </>
   );
 }
