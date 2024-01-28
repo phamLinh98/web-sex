@@ -1,5 +1,5 @@
-import { getGraph } from "../../services/graphServices";
-import { loadedData, loadingData } from "./action";
+import { getGraph, createGraph } from "../../services/graphServices";
+import { loadedData, loadingData, error } from "./action";
 async function refeshData(dispatch) {
   dispatch(loadingData());
   try {
@@ -12,3 +12,16 @@ async function refeshData(dispatch) {
 export function getFromRefeshData() {
   return refeshData;
 }
+
+// export function createData({ title }) {
+//   return async (dispatch) => {
+//     try {
+//       const newData = await createGraph({ title });
+//       if (newData.title === title) {
+//         dispatch(refeshData);
+//       }
+//     } catch (error) {
+//       dispatch({ type: "graph/error", payload: "Loi Adding Data" });
+//     }
+//   };
+// }
