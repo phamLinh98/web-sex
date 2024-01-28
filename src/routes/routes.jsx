@@ -3,6 +3,7 @@ import Home from "../home/home";
 import ErrorPage from "../error/error";
 import Layout from "../layouts/Layout";
 import GraphControl from "../graphControl/graph";
+import UploadPicture from "../uploadPicture/uploadPicture";
 
 const routesConfigs = [
   {
@@ -20,6 +21,10 @@ const routesConfigs = [
           {
             path: "graph",
             element: <GraphControl />,
+          },
+          {
+            path: "upload",
+            element: <UploadPicture />,
           },
         ],
       },
