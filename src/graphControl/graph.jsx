@@ -1,29 +1,10 @@
-import React, { useEffect } from "react";
-// import { getGraph } from "../services/graphServices";
-import { getFromRefeshData } from "./+state/effect";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  selectErrorMessager,
-  selectLoadSucess,
-  selectLoading,
-} from "./+state/selector";
-
-let isInitial = true;
+import React from "react";
+import useFacade from "./+state/facade";
 export default function GraphControl() {
-  const isLoading = useSelector(selectLoading);
-  const data = useSelector(selectLoadSucess);
-  const error = useSelector(selectErrorMessager);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (isInitial) {
-      isInitial = false;
-      dispatch(getFromRefeshData());
-    }
-  }, [dispatch]);
+  const { data, waitData, error } = useFacade();
   return (
     <>
-      {isLoading && <div>Dang Loading xin hay doi...</div>}
+      {waitData && <div>Dang Loading xin hay doi...</div>}
       {error && <div>{error}</div>}
       {data ? (
         <div>
