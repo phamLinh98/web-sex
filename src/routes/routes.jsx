@@ -4,6 +4,7 @@ import ErrorPage from "../error/error";
 import Layout from "../layouts/Layout";
 import GraphControl from "../graphControl/graph";
 import UploadPicture from "../uploadPicture/uploadPicture";
+import ExampleContainer from "../customHook/ExampleContainer";
 
 const routesConfigs = [
   {
@@ -25,6 +26,10 @@ const routesConfigs = [
           {
             path: "upload",
             element: <UploadPicture />,
+          },
+          {
+            path: "customHook",
+            element: <ExampleContainer />,
           },
         ],
       },
