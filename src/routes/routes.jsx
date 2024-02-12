@@ -6,8 +6,8 @@ import GraphControl from "../graphControl/graph";
 import Parent from "../demo/cha";
 import Children from "../demo/con";
 import Emut from "../demo/emut";
-import LoginApp from "../login/LoginApp";
 import AuthentcationLayout from "../layouts/AuthenticationLayout";
+import LoginApp from "../login/LoginApp";
 
 const routesConfigs = [
   {
