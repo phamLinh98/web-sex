@@ -1,19 +1,26 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 export default function LoginApp() {
+  const navigate = useNavigate();
   const auth = getAuth();
   const handleLoginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    const {
-      user: { displayName, email, photoURL, uid },
-    } = await signInWithPopup(auth, provider);
-    const user = auth.currentUser;
-    console.log(user);
-    if (user) {
-      console.log(user);
-    }
+    await signInWithPopup(auth, provider);
+    const accessToken = await auth.currentUser.getIdToken();
+    localStorage.getItem("accessToken", accessToken);
+    navigate("/graph");
+    console.log(accessToken);
   };
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const unSub = auth.onIdTokenChanged(async (user) => {
+      if (user) {
+        navigate("/graph");
+      }
+    });
+    return () => unSub();
+  }, []);
   return (
     <div>
       <h1 className="">Login</h1>
