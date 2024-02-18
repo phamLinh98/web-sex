@@ -25,6 +25,7 @@ authRoute.post("/register", async (req, res) => {
       return res.send("User already exists");
     }
     const hashPassword = await bcrypt.hash(password, 10);
+    console.log(hashPassword);
     const newUser = new User({ email, password: hashPassword });
     await newUser.save();
     res.send("User created");
@@ -33,6 +34,7 @@ authRoute.post("/register", async (req, res) => {
 authRoute.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const hashPassword = await bcrypt.hash(password, 10);
+  console.log(hashPassword);
   const user = await User.findOne({ email, password: hashPassword });
   if (user) {
     const token = jwt.sign({ id: user._id, email: user }, envConfig.JWT_SECRET);
