@@ -43,7 +43,7 @@ authRoute.post("/login", async (req, res) => {
       httpOnly: true,
     });
     return res.send("Login success");
-  }
+}
   res.send("Invalid login");
 });
 
