@@ -21,14 +21,14 @@ authRoute.get("/register", async (req, res) => {
   if (user) {
     return res.send("User already exists");
   }
-  const newUser = new User({
-    username,
-    password,
-  });
+  const newUser = new User({ username, password });
   await newUser.save();
-  res.send("Register route");
+  res.send("User created");
 });
 
-authRoute.get("/login", async (req, res) => {});
+authRoute.get("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email, password });
+});
 
 export default authRoute;
