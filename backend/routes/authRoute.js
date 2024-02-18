@@ -23,6 +23,7 @@ authRoute.post("/register", async (req, res) => {
   if (user) {
     return res.send("User already exists");
   }
+  const hashCode = {};
   const newUser = new User({ email, password });
   await newUser.save();
   res.send("User created");
