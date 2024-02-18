@@ -30,6 +30,10 @@ const routesConfigs = [
             path: "graph",
             element: <GraphControl />,
           },
+          {
+            path: "upload",
+            element: <UploadPicture />,
+          },
         ],
       },
     ],
