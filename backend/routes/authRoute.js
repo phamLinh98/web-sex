@@ -17,12 +17,13 @@ const userSchema = new Schema({
 
 const User = model("User", userSchema);
 authRoute.post("/register", async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
+  // eslint-disable-next-line no-undef
   const user = await User.findOne({ email });
   if (user) {
     return res.send("User already exists");
   }
-  const newUser = new User({ username, password });
+  const newUser = new User({ email, password });
   await newUser.save();
   res.send("User created");
 });
