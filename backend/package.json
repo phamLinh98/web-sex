@@ -5,7 +5,9 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "docker-up" : "docker-compose up",
+    "docker-down" : "docker-compose down"
   },
   "author": "",
   "license": "ISC",
