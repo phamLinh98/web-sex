@@ -3,21 +3,29 @@ import Home from "../home/home";
 import ErrorPage from "../error/error";
 import Layout from "../layouts/Layout";
 import GraphControl from "../graphControl/graph";
-import UploadPicture from "../uploadPicture/uploadPicture";
+import Parent from "../demo/cha";
+import Children from "../demo/con";
+import Emut from "../demo/emut";
+import AuthentcationLayout from "../layouts/AuthenticationLayout";
+import LoginApp from "../login/LoginApp";
 
 const routesConfigs = [
   {
-    path: "/",
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "home",
-        element: <Home />,
+        path: "login",
+        element: <LoginApp />,
       },
       {
-        path: "home",
+        element: <AuthentcationLayout />,
+        errorElement: <ErrorPage />,
         children: [
+          {
+            path: "home",
+            element: <Home />,
+          },
           {
             path: "graph",
             element: <GraphControl />,
@@ -31,8 +39,18 @@ const routesConfigs = [
     ],
   },
   {
-    path: "error",
-    element: <ErrorPage />,
+    path: "cha",
+    element: <Parent />,
+    children: [
+      {
+        path: "con",
+        element: <Children />,
+      },
+      {
+        path: "conthu",
+        element: <Emut />,
+      },
+    ],
   },
 ];
 const router = createBrowserRouter(routesConfigs);
