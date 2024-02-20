@@ -1,10 +1,22 @@
 import { Router } from "express";
-import User from "../models/user.js";
+import { Schema, model } from "mongoose";
 import jwt from "jsonwebtoken";
 import { envConfig } from "../configs/envConfig.js";
 import bcrypt from "bcryptjs";
 const authRoute = Router();
 
+const userSchema = new Schema({
+  email: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
+
+const User = model("User", userSchema);
 authRoute.post("/register", async (req, res) => {
   const { email, password } = req.body;
   // eslint-disable-next-line no-undef

@@ -5,11 +5,7 @@ import { envConfig } from "../configs/envConfig.js";
 export const decodeLoginUser = (req, res, next) => {
   const token = getCookieToken(req).token;
   if (token) {
-    try {
-      req.loginUser = jwt.verify(token, envConfig.JWT_SECRET);
-    } catch (error) {
-      return res.status(401).json({ message: "Invalid token" });
-    }
+    req.loginUser = jwt.verify(token, envConfig.JWT_SECRET);
   }
   console.log(req.loginUser);
   next();
