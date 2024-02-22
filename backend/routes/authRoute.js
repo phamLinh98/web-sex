@@ -3,7 +3,7 @@ import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import { envConfig } from "../configs/envConfig.js";
 import bcrypt from "bcryptjs";
-import { clearCookies } from "../utlis/auth.js";
+import { clearCookies, validateRegisterInput } from "../utlis/auth.js";
 const authRoute = Router();
 
 authRoute.post("/register", async (req, res) => {
@@ -13,9 +13,13 @@ authRoute.post("/register", async (req, res) => {
   if (user) {
     return res.send("User already exists");
   }
+  const error = validateRegisterInput(email, password);
+  if (error) {
+    return res.status(400).send(error);
+  }
   const hashPassword = await bcrypt.hash(password, 10);
   console.log(hashPassword);
-  const newUser = new User({ email, password: hashPassword });
+  const newUser = new User({ email, password: hashPassword, type: "local" });
   await newUser.save();
   res.send("User created");
 });
