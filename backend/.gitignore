@@ -5,6 +5,12 @@
 /.pnp
 .pnp.js
 /database
+database
+./database/*
+/database/*
+/backend/database/*
+/backend/database/
+./backend/database
 
 # testing
 /coverage

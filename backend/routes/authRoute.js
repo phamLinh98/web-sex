@@ -3,6 +3,7 @@ import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import { envConfig } from "../configs/envConfig.js";
 import bcrypt from "bcryptjs";
+import { clearCookies } from "../utlis/auth.js";
 const authRoute = Router();
 
 authRoute.post("/register", async (req, res) => {
@@ -27,6 +28,7 @@ authRoute.post("/login", async (req, res) => {
   }
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
+    clearCookies(res);
     return res.send("Invalid login");
   }
   const token = jwt.sign(
@@ -35,7 +37,7 @@ authRoute.post("/login", async (req, res) => {
   );
   console.log(token);
   res.cookie("token", token, {
-    httpOnly: true,
+    httpOnly: true, // true: cookie is not accessible from javascript, false: cookie is accessible from javascript
   });
 
   return res.send("Login Success");

@@ -7,3 +7,7 @@ export const getCookieToken = (req, res) => {
   });
   return cookies;
 };
+
+export function clearCookies(res){
+  res.clearCookie('token');
+}
