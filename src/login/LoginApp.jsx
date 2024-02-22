@@ -9,7 +9,7 @@ export default function LoginApp() {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
     const accessToken = await auth.currentUser.getIdToken();
-    localStorage.getItem("accessToken", accessToken);
+    localStorage.setItem("accessToken", accessToken);
     navigate("/graph");
     console.log(accessToken);
   };
@@ -19,7 +19,10 @@ export default function LoginApp() {
         navigate("/graph");
       }
     });
-    return () => unSub();
+    return () => {
+      unSub();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div>
