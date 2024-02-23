@@ -3,7 +3,11 @@ import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import { envConfig } from "../configs/envConfig.js";
 import bcrypt from "bcryptjs";
-import { clearCookies, validateRegisterInput } from "../utlis/auth.js";
+import {
+  clearCookies,
+  getCookieToken,
+  validateRegisterInput,
+} from "../utlis/auth.js";
 const authRoute = Router();
 
 authRoute.post("/register", async (req, res) => {
@@ -45,6 +49,39 @@ authRoute.post("/login", async (req, res) => {
   });
 
   return res.send("Login Success");
+});
+
+authRoute.post("/logout", (req, res) => {
+  clearCookies(res);
+  return res.send("Logout Success");
+});
+
+// when call api verify will be check token have role to logout, if role is ok will be clear token ...next will be into api logout
+authRoute.get("/verify", (req, res) => {
+  const token = getCookieToken(req).token;
+  if (!token) {
+    return res.send("Not Logged In");
+  }
+  try {
+    const verified = jwt.verify(token, envConfig.JWT_SECRET);
+    return res.send(!!verified);
+  } catch (err) {
+    return res.send("Invalid Token");
+  }
+});
+
+authRoute.get("/verify-bearror-token", (req, res) => {
+  const bearrorToken = req.headers.authorization;
+  if (!bearrorToken) {
+    return res.send("Not Logged In");
+  }
+  const token = bearrorToken.split(" ")[1];
+  try {
+    const verified = jwt.verify(token, envConfig.JWT_SECRET);
+    return res.send(!!verified);
+  } catch (err) {
+    return res.send("Invalid Token");
+  }
 });
 
 export default authRoute;
