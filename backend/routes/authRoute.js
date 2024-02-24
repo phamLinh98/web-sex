@@ -3,6 +3,8 @@ import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import { envConfig } from "../configs/envConfig.js";
 import bcrypt from "bcryptjs";
+import "../configs/firebaseConfig.js";
+import admin from "firebase-admin";
 import {
   clearCookies,
   getCookieToken,
@@ -70,17 +72,20 @@ authRoute.get("/verify", (req, res) => {
   }
 });
 
-authRoute.get("/verify-bearror-token", (req, res) => {
-  const bearrorToken = req.headers.authorization;
-  if (!bearrorToken) {
+authRoute.get("/verify-bearror-token", async (req, res) => {
+  const bearerToken = req.headers.authorization;
+  console.log(bearerToken);
+  if (!bearerToken) {
     return res.send("Not Logged In");
   }
-  const token = bearrorToken.split(" ")[1];
+  const token = bearerToken.split(" ")[1];
+  console.log(token);
   try {
-    const verified = jwt.verify(token, envConfig.JWT_SECRET);
-    return res.send(!!verified);
-  } catch (err) {
-    return res.send("Invalid Token");
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    console.log(decodedToken);
+  } catch (error) {
+    console.error(error);
+    return res.status(401).send("Invalid Token");
   }
 });
 

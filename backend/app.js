@@ -4,6 +4,7 @@ import "./configs/dbConfig.js";
 import { errorMiddlewares } from "./middleware/errorMiddleware.js";
 import { commonMiddlewares } from "./middleware/commonMiddleware.js";
 import { envConfig } from "./configs/envConfig.js";
+import "./configs/firebaseConfig.js";
 
 const app = express();
 
