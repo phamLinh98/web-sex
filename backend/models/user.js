@@ -28,13 +28,12 @@ const userSchema = new Schema({
     unique: true,
   },
   password: String,
-  name: String,
-  picture: String,
-  user_id:String,
-  type:{
-    type:String,
-    required:true
-  }
+  displayName: String,
+  avatar: String,
+  type: {
+    type: String,
+    required: true,
+  },
 });
 
 const User = model("User", userSchema);

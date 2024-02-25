@@ -30,6 +30,7 @@ authRoute.post("/register", async (req, res) => {
   res.send("User created");
 });
 
+// verify authentication by local password will be get a token from that,
 authRoute.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -41,9 +42,13 @@ authRoute.post("/login", async (req, res) => {
     clearCookies(res);
     return res.send("Invalid login");
   }
+  // this is assign token after login successfully
   const token = jwt.sign(
     { id: user._id, email: user.email },
-    envConfig.JWT_SECRET
+    envConfig.JWT_SECRET,
+    {
+      expiresIn: "7d",
+    }
   );
   console.log(token);
   res.cookie("token", token, {
@@ -53,36 +58,60 @@ authRoute.post("/login", async (req, res) => {
   return res.send("Login Success");
 });
 
-authRoute.post("/logout", (req, res) => {
+authRoute.get("/logout", (req, res) => {
   clearCookies(res);
   return res.send("Logout Success");
 });
 
-// when call api verify will be check token have role to logout, if role is ok will be clear token ...next will be into api logout
+// after authentication successfully by local password or sso google , check token and next step
 authRoute.get("/verify", (req, res) => {
-  const token = getCookieToken(req).token;
+  const token = getCookieToken(req).token; // Get token from cookie
   if (!token) {
     return res.send("Not Logged In");
   }
   try {
-    const verified = jwt.verify(token, envConfig.JWT_SECRET);
+    const verified = jwt.verify(token, envConfig.JWT_SECRET); //check that token
     return res.send(!!verified);
   } catch (err) {
     return res.send("Invalid Token");
   }
 });
 
-authRoute.get("/verify-bearror-token", async (req, res) => {
+// get token from frontend after login successfully google firebase
+authRoute.post("/sso-login", async (req, res) => {
   const bearerToken = req.headers.authorization;
   console.log(bearerToken);
   if (!bearerToken) {
     return res.send("Not Logged In");
   }
   const token = bearerToken.split(" ")[1];
-  console.log(token); 
+  console.log(token);
   try {
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    console.log(decodedToken);
+    const loginUser = await admin.auth().verifyIdToken(token); // verify token from sso firebase google
+    const user = await User.findOne({ email: loginUser.email });
+    // if user not exist, create a new user
+    if (!user) {
+      const newUser = await new User({
+        email: loginUser.email,
+        role: "user",
+        displayName: loginUser.name,
+        avatar: loginUser.picture,
+      });
+      await newUser.save();
+    }
+    //create a new token and save to cookie, token info included user info
+    const jwtToken = jwt.sign(
+      { id: user._id, email: loginUser.email },
+      envConfig.JWT_SECRET,
+      {
+        expiresIn: "7d", //token se het han trong 7 ngay
+      }
+    );
+    //save to cookie
+    res.cookie("token", jwtToken, {
+      httpOnly: true,
+    });
+    return res.send("Login Success");
   } catch (error) {
     console.error(error);
     return res.status(401).send("Invalid Token");
