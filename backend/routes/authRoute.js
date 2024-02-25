@@ -79,7 +79,7 @@ authRoute.get("/verify-bearror-token", async (req, res) => {
     return res.send("Not Logged In");
   }
   const token = bearerToken.split(" ")[1];
-  console.log(token);
+  console.log(token); 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     console.log(decodedToken);
