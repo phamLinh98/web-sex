@@ -25,3 +25,4 @@ export const authentcatedMiddleware = (req, res, next) => {
 };
 
 export const authenticated = [decodeLoginUser, authentcatedMiddleware];
+//decodeLoginUser: check trong cookie co token hay khong  -> co thi giai ma (xac nhan day chinh la token cua minh)

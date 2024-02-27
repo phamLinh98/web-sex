@@ -51,11 +51,11 @@ authRoute.post("/login", async (req, res) => {
     }
   );
   console.log(token);
-  res.cookie("token", token, {
-    httpOnly: true, // true: cookie is not accessible from javascript, false: cookie is accessible from javascript
-    signed: true, //true will be use secret key to encrypt the cookie
-    sameSite: "none", // none will be allowed cross-site requests
-    secure: envConfig.ENV === "product", //secure true will only send cookies over HTTPS
+  res.cookie('token', token, {
+    httpOnly: true /* httpOnly: true will prevent javascript from accessing cookies */,
+    secure: envConfig.ENV === 'product' /* secure: true will only send cookie over https */,
+    sameSite: 'lax' /* sameSite: lax will prevent csrf attack */,
+    signed: true /* signed: true will use secret key to encrypt cookie */,
   });
 
   return res.send("Login Success");
@@ -111,11 +111,11 @@ authRoute.post("/sso-login", async (req, res) => {
       }
     );
     //save to cookie
-    res.cookie("token", jwtToken, {
+    res.cookie('token', jwtToken, {
       httpOnly: true,
+      secure: envConfig.ENV === 'product',
+      sameSite: 'lax',
       signed: true,
-      secure: envConfig.ENV === "product",
-      sameSite: "none",
     });
     return res.send("Login Success");
   } catch (error) {
