@@ -1,2 +1,2 @@
-import graphSlice from "./reducer.js";
+import graphSlice from "./reducer";
 export const { loadingData, loadedData, error } = graphSlice.actions;

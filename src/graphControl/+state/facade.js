@@ -2,10 +2,10 @@ import {
   selectErrorMessager,
   selectLoading,
   selectLoadSucess,
-} from "./selector.js";
+} from "./selector";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { getFromRefeshData } from "./effect.js";
+import { getFromRefeshData } from "./effect";
 let isInitial = true;
 export default function useFacade() {
   const data = useSelector(selectLoadSucess);

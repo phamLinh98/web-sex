@@ -1,4 +1,4 @@
-import { graphSlice } from "../graphControl/+state/reducer.js";
+import { graphSlice } from "../graphControl/+state/reducer";
 import { configureStore } from "@reduxjs/toolkit";
 export const store = configureStore({
   reducer: {

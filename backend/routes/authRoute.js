@@ -111,11 +111,8 @@ authRoute.post("/sso-login", async (req, res) => {
       }
     );
     //save to cookie
-    res.cookie('token', jwtToken, {
+    res.cookie("token", jwtToken, {
       httpOnly: true,
-      secure: envConfig.ENV === 'product',
-      sameSite: 'lax',
-      signed: true,
     });
     return res.send("Login Success");
   } catch (error) {

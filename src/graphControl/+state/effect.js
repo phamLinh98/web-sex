@@ -1,5 +1,5 @@
-import { getGraph, createGraph } from "../../services/graphServices.js";
-import { loadedData, loadingData, error } from "./action.js";
+import { getGraph, createGraph } from "../../services/graphServices";
+import { loadedData, loadingData, error } from "./action";
 async function refeshData(dispatch) {
   dispatch(loadingData());
   try {

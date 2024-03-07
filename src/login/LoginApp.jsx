@@ -9,7 +9,6 @@ export default function LoginApp() {
   const handleLoginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
-    // gọi accessToken thì sẽ lấy được key mới
     const accessToken = await auth.currentUser.getIdToken();
     loginSSO(accessToken)
       .then((data) => {
@@ -32,7 +31,7 @@ export default function LoginApp() {
     return () => {
       unSub();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div>
