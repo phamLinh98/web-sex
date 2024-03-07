@@ -9,6 +9,11 @@ export default function AuthenticationLayout() {
   useEffect(() => {
     const unSub = auth.onIdTokenChanged(async (user) => {
       if (user) {
+<<<<<<< HEAD
+=======
+        const accessToken = await auth.currentUser.getIdToken();
+        await loginSSO(accessToken);
+>>>>>>> parent of e1b2047 (fix bug fetch api error by axios FE)
         return;
       }
       navigate("/login"); // Sử dụng hàm chuyển hướng từ hook useNavigate
