@@ -11,6 +11,7 @@ export default function AuthenticationLayout() {
       if (user) {
         return;
       }
+      
       navigate("/login"); // Sử dụng hàm chuyển hướng từ hook useNavigate
     });
     return () => unSub();
