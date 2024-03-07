@@ -7,12 +7,14 @@ import "../configs/firebaseConfig.js";
 import admin from "firebase-admin";
 import {
   clearCookies,
+  getCookieToken,
   validateRegisterInput,
 } from "../utlis/auth.js";
 const authRoute = Router();
 
 authRoute.post("/register", async (req, res) => {
   const { email, password } = req.body;
+  // eslint-disable-next-line no-undef
   const user = await User.findOne({ email });
   if (user) {
     return res.send("User already exists");
@@ -22,6 +24,7 @@ authRoute.post("/register", async (req, res) => {
     return res.status(400).send(error);
   }
   const hashPassword = await bcrypt.hash(password, 10);
+  console.log(hashPassword);
   const newUser = new User({ email, password: hashPassword, type: "local" });
   await newUser.save();
   res.send("User created");
@@ -29,13 +32,11 @@ authRoute.post("/register", async (req, res) => {
 
 // verify authentication by local password will be get a token from that,
 authRoute.post("/login", async (req, res) => {
-  // check if user exist
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
     return res.send("Invalid login");
   }
-  // check if password is correct
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
     clearCookies(res);
@@ -46,16 +47,14 @@ authRoute.post("/login", async (req, res) => {
     { id: user._id, email: user.email },
     envConfig.JWT_SECRET,
     {
-      expiresIn: "1day",
+      expiresIn: "7d",
     }
   );
   console.log(token);
-  res.cookie("token", token, {
+  res.cookie('token', token, {
     httpOnly: true /* httpOnly: true will prevent javascript from accessing cookies */,
-    secure:
-      envConfig.ENV ===
-      "product" /* secure: true will only send cookie over https */,
-    sameSite: "lax" /* sameSite: lax will prevent csrf attack */,
+    secure: envConfig.ENV === 'product' /* secure: true will only send cookie over https */,
+    sameSite: 'lax' /* sameSite: lax will prevent csrf attack */,
     signed: true /* signed: true will use secret key to encrypt cookie */,
   });
 
@@ -67,60 +66,62 @@ authRoute.get("/logout", (req, res) => {
   return res.send("Logout Success");
 });
 
-// get token from frontend after login successfully google firebase
-authRoute.post('/sso-login', async (req, res) => {
-  const bearerToken = req.headers.authorization;
-  if (!bearerToken) {
-    return res.send('Not logged in');
+// after authentication successfully by local password or sso google , check token and next step
+authRoute.get("/verify", (req, res) => {
+  const token = getCookieToken(req).token; // Get token from cookie
+  if (!token) {
+    return res.send("Not Logged In");
   }
-  const token = bearerToken.split(' ')[1];
-  // This token is firebase token
   try {
-    // use firebase verifyIdToken to verify token
-    const loginUser = await admin.auth().verifyIdToken(token);
+    const verified = jwt.verify(token, envConfig.JWT_SECRET); //check that token
+    return res.send(!!verified);
+  } catch (err) {
+    return res.send("Invalid Token");
+  }
+});
 
-    // If loginUser.email is not exist in database, create new user
-    const user = await User.findOne({
-      email: loginUser.email,
-     // type: 'firebase',
-    });
-    console.log(user);
+// get token from frontend after login successfully google firebase
+authRoute.post("/sso-login", async (req, res) => {
+  const bearerToken = req.headers.authorization;
+  console.log(bearerToken);
+  if (!bearerToken) {
+    return res.send("Not Logged In");
+  }
+  const token = bearerToken.split(" ")[1];
+  console.log(token);
+  try {
+    const loginUser = await admin.auth().verifyIdToken(token); // verify token from sso firebase google
+    const user = await User.findOne({ email: loginUser.email });
+    // if user not exist, create a new user
     if (!user) {
-      const newUser = new User({
+      const newUser = await new User({
         email: loginUser.email,
-        type: 'firebase',
+        role: "user",
         displayName: loginUser.name,
         avatar: loginUser.picture,
       });
       await newUser.save();
     }
-
-    // Create jwt token and save in cookie in 1 day
+    //create a new token and save to cookie, token info included user info
     const jwtToken = jwt.sign(
-      {
-        id: user._id,
-        email: loginUser.email,
-        displayName: loginUser.name,
-        avatar: loginUser.picture,
-        role: 'user',
-      },
+      { id: user._id, email: loginUser.email },
       envConfig.JWT_SECRET,
       {
-        expiresIn: '1day',
-      },
+        expiresIn: "7d", //token se het han trong 7 ngay
+      }
     );
-
+    //save to cookie
     res.cookie('token', jwtToken, {
       httpOnly: true,
       secure: envConfig.ENV === 'product',
       sameSite: 'lax',
       signed: true,
     });
-
-    return res.send('Login success');
+    return res.send("Login Success");
   } catch (error) {
-    return res.send('Invalid token');
+    console.error(error);
+    return res.status(401).send("Invalid Token");
   }
-});;
+});
 
 export default authRoute;
