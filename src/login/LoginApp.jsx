@@ -12,7 +12,7 @@ export default function LoginApp() {
     await signInWithPopup(auth, provider);
     // gọi accessToken thì sẽ lấy được key mới
     const accessToken = await auth.currentUser.getIdToken();
-    //localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('accessToken', accessToken);
   };
   useEffect(() => {
     const unSub = auth.onIdTokenChanged(async (user) => {
