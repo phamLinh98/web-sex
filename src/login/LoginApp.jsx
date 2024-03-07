@@ -2,7 +2,6 @@ import React from "react";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 export default function LoginApp() {
   const navigate = useNavigate();
   const auth = getAuth();
