@@ -2,16 +2,17 @@ import React from "react";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 export default function LoginApp() {
   const navigate = useNavigate();
   const auth = getAuth();
+  
   const handleLoginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
+    // gọi accessToken thì sẽ lấy được key mới
     const accessToken = await auth.currentUser.getIdToken();
-    localStorage.setItem("accessToken", accessToken);
-    navigate("/graph");
-    console.log(accessToken);
+    localStorage.setItem('accessToken', accessToken);
   };
   useEffect(() => {
     const unSub = auth.onIdTokenChanged(async (user) => {
@@ -22,7 +23,7 @@ export default function LoginApp() {
     return () => {
       unSub();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div>

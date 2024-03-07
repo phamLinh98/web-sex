@@ -7,14 +7,12 @@ import "../configs/firebaseConfig.js";
 import admin from "firebase-admin";
 import {
   clearCookies,
-  getCookieToken,
   validateRegisterInput,
 } from "../utlis/auth.js";
 const authRoute = Router();
 
 authRoute.post("/register", async (req, res) => {
   const { email, password } = req.body;
-  // eslint-disable-next-line no-undef
   const user = await User.findOne({ email });
   if (user) {
     return res.send("User already exists");
@@ -24,7 +22,6 @@ authRoute.post("/register", async (req, res) => {
     return res.status(400).send(error);
   }
   const hashPassword = await bcrypt.hash(password, 10);
-  console.log(hashPassword);
   const newUser = new User({ email, password: hashPassword, type: "local" });
   await newUser.save();
   res.send("User created");
@@ -32,11 +29,13 @@ authRoute.post("/register", async (req, res) => {
 
 // verify authentication by local password will be get a token from that,
 authRoute.post("/login", async (req, res) => {
+  // check if user exist
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
     return res.send("Invalid login");
   }
+  // check if password is correct
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
     clearCookies(res);
@@ -47,12 +46,17 @@ authRoute.post("/login", async (req, res) => {
     { id: user._id, email: user.email },
     envConfig.JWT_SECRET,
     {
-      expiresIn: "7d",
+      expiresIn: "1day",
     }
   );
   console.log(token);
   res.cookie("token", token, {
-    httpOnly: true, // true: cookie is not accessible from javascript, false: cookie is accessible from javascript
+    httpOnly: true /* httpOnly: true will prevent javascript from accessing cookies */,
+    secure:
+      envConfig.ENV ===
+      "product" /* secure: true will only send cookie over https */,
+    sameSite: "lax" /* sameSite: lax will prevent csrf attack */,
+    signed: true /* signed: true will use secret key to encrypt cookie */,
   });
 
   return res.send("Login Success");
@@ -63,59 +67,60 @@ authRoute.get("/logout", (req, res) => {
   return res.send("Logout Success");
 });
 
-// after authentication successfully by local password or sso google , check token and next step
-authRoute.get("/verify", (req, res) => {
-  const token = getCookieToken(req).token; // Get token from cookie
-  if (!token) {
-    return res.send("Not Logged In");
-  }
-  try {
-    const verified = jwt.verify(token, envConfig.JWT_SECRET); //check that token
-    return res.send(!!verified);
-  } catch (err) {
-    return res.send("Invalid Token");
-  }
-});
-
 // get token from frontend after login successfully google firebase
-authRoute.post("/sso-login", async (req, res) => {
+authRoute.post('/sso-login', async (req, res) => {
   const bearerToken = req.headers.authorization;
-  console.log(bearerToken);
   if (!bearerToken) {
-    return res.send("Not Logged In");
+    return res.send('Not logged in');
   }
-  const token = bearerToken.split(" ")[1];
-  console.log(token);
+  const token = bearerToken.split(' ')[1];
+  // This token is firebase token
   try {
-    const loginUser = await admin.auth().verifyIdToken(token); // verify token from sso firebase google
-    const user = await User.findOne({ email: loginUser.email });
-    // if user not exist, create a new user
+    // use firebase verifyIdToken to verify token
+    const loginUser = await admin.auth().verifyIdToken(token);
+
+    // If loginUser.email is not exist in database, create new user
+    const user = await User.findOne({
+      email: loginUser.email,
+     // type: 'firebase',
+    });
+    console.log(user);
     if (!user) {
-      const newUser = await new User({
+      const newUser = new User({
         email: loginUser.email,
-        role: "user",
+        type: 'firebase',
         displayName: loginUser.name,
         avatar: loginUser.picture,
       });
       await newUser.save();
     }
-    //create a new token and save to cookie, token info included user info
+
+    // Create jwt token and save in cookie in 1 day
     const jwtToken = jwt.sign(
-      { id: user._id, email: loginUser.email },
+      {
+        id: user._id,
+        email: loginUser.email,
+        displayName: loginUser.name,
+        avatar: loginUser.picture,
+        role: 'user',
+      },
       envConfig.JWT_SECRET,
       {
-        expiresIn: "7d", //token se het han trong 7 ngay
-      }
+        expiresIn: '1day',
+      },
     );
-    //save to cookie
-    res.cookie("token", jwtToken, {
+
+    res.cookie('token', jwtToken, {
       httpOnly: true,
+      secure: envConfig.ENV === 'product',
+      sameSite: 'lax',
+      signed: true,
     });
-    return res.send("Login Success");
+
+    return res.send('Login success');
   } catch (error) {
-    console.error(error);
-    return res.status(401).send("Invalid Token");
+    return res.send('Invalid token');
   }
-});
+});;
 
 export default authRoute;

@@ -1,7 +1,9 @@
 export const envConfig = {
+  ENV: process.env.NODE_ENV || "development",
   PORT: process.env.PORT || 3344,
   MONGO_URI: process.env.MONGO_URI || "mongodb://root:example@localhost:27017",
   JWT_SECRET: process.env.JWT_SECRET || "binhchilinh1234",
+  COOKIE_SECRET: process.env.COOKIE_SECRET || 'cookie_secret',
   FIREBASE: {
     apiKey: process.env.FIREBASE_API_KEY || "apikey",
     authDomain: process.env.FIREBASE_AUTH_DOMAIN || "authdomain",
