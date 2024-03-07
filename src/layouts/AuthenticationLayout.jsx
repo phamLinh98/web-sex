@@ -10,10 +10,14 @@ export default function AuthenticationLayout() {
   useEffect(() => {
     const unSub = auth.onIdTokenChanged(async (user) => {
       if (user) {
+
         const accessToken = await auth.currentUser.getIdToken();
+
         await loginSSO(accessToken);
+
         return;
       }
+      
       navigate("/login"); // Sử dụng hàm chuyển hướng từ hook useNavigate
     });
     return () => unSub();
