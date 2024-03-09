@@ -15,7 +15,7 @@ export default function AuthenticationLayout() {
       if (user) {
         const accessToken = await auth.currentUser.getIdToken();
         await loginSSO(accessToken);
-        setIsLoading(true);
+        setIsLoading(false);
         return;
       }
       navigate("/login"); // Sử dụng hàm chuyển hướng từ hook useNavigate
