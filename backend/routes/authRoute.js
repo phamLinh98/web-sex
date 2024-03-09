@@ -5,26 +5,23 @@ import { envConfig } from "../configs/envConfig.js";
 import bcrypt from "bcryptjs";
 import "../configs/firebaseConfig.js";
 import admin from "firebase-admin";
-import {
-  clearCookies,
-  validateRegisterInput,
-} from "../utlis/auth.js";
+import { clearCookies, validateRegisterInput } from "../utlis/auth.js";
 const authRoute = Router();
 
 authRoute.post("/register", async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    return res.send("User already exists");
+    return res.status(400).json({ message: "User already exist" });
   }
   const error = validateRegisterInput(email, password);
   if (error) {
-    return res.status(400).send(error);
+    return res.status(400).json({ message: error });
   }
   const hashPassword = await bcrypt.hash(password, 10);
   const newUser = new User({ email, password: hashPassword, type: "local" });
   await newUser.save();
-  res.send("User created");
+  res.send({ message: "Register success" });
 });
 
 // verify authentication by local password will be get a token from that,
@@ -33,7 +30,7 @@ authRoute.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
-    return res.send("Invalid login");
+    return res.status(400).send("Invalid login");
   }
   // check if password is correct
   const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -59,7 +56,7 @@ authRoute.post("/login", async (req, res) => {
     signed: true /* signed: true will use secret key to encrypt cookie */,
   });
 
-  return res.send("Login Success");
+  return res.send({ message: "Login successful" });
 });
 
 authRoute.get("/logout", (req, res) => {
@@ -68,12 +65,12 @@ authRoute.get("/logout", (req, res) => {
 });
 
 // get token from frontend after login successfully google firebase
-authRoute.post('/sso-login', async (req, res) => {
+authRoute.post("/sso-login", async (req, res) => {
   const bearerToken = req.headers.authorization;
   if (!bearerToken) {
-    return res.send('Not logged in');
+    return res.status(401).send({ message: "Unauthorizated" });
   }
-  const token = bearerToken.split(' ')[1];
+  const token = bearerToken.split(" ")[1];
   // This token is firebase token
   try {
     // use firebase verifyIdToken to verify token
@@ -82,13 +79,13 @@ authRoute.post('/sso-login', async (req, res) => {
     // If loginUser.email is not exist in database, create new user
     const user = await User.findOne({
       email: loginUser.email,
-     // type: 'firebase',
+      // type: 'firebase',
     });
     console.log(user);
     if (!user) {
       const newUser = new User({
         email: loginUser.email,
-        type: 'firebase',
+        type: "firebase",
         displayName: loginUser.name,
         avatar: loginUser.picture,
       });
@@ -102,25 +99,25 @@ authRoute.post('/sso-login', async (req, res) => {
         email: loginUser.email,
         displayName: loginUser.name,
         avatar: loginUser.picture,
-        role: 'user',
+        role: "user",
       },
       envConfig.JWT_SECRET,
       {
-        expiresIn: '1day',
-      },
+        expiresIn: "1day",
+      }
     );
 
-    res.cookie('token', jwtToken, {
+    res.cookie("token", jwtToken, {
       httpOnly: true,
-      secure: envConfig.ENV === 'product',
-      sameSite: 'lax',
+      secure: envConfig.ENV === "product",
+      sameSite: "lax",
       signed: true,
     });
 
-    return res.send('Login success');
+    return res.send({ message: "Login success" });
   } catch (error) {
-    return res.send('Invalid token');
+    return res.status(401).send({ message: "Unauthorized" });
   }
-});;
+});
 
 export default authRoute;
