@@ -1,33 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { getAuth } from "firebase/auth";
-import { loginSSO } from "../services/AuthServices";
+import { getUserInfo } from "../services/AuthServices";
 import Loading from "../components/Loading";
 
 export default function AuthenticationLayout() {
   // do AuthenticationLayout boc toan bo route du an
+  // const {setLoginUser} = useContext(MenuContext);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const auth = getAuth();
 
-  // useEffect(() => {
-  //   const unSub = auth.onIdTokenChanged(async (user) => {
-  //     if (user) {
-  //       const accessToken = await auth.currentUser.getIdToken();
-  //       await loginSSO(accessToken);
-  //       setIsLoading(true);
-  //       return;
-  //     }
-  //     // truong hop ko co token cho login lai luon
-  //     setIsLoading(false);
-  //     navigate("/login"); // Sử dụng hàm chuyển hướng từ hook useNavigate
-  //   });
-  //   return () => {
-  //     setIsLoading(false);
-  //     unSub();
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [auth]); // Thêm navigate vào dependency array để đảm bảo hook không bị lỗi
+  // Oulet phai dc render bang doan code duoi
+  useEffect(() => {
+    setIsLoading(true);
+    getUserInfo()
+      .then((data) => {
+        setIsLoading(false);
+        if (data.loginUser.id) {
+          // setLoginUser(data.loginUser);
+          navigate("/login");
+        } else {
+          setIsLoading(false);
+          navigate("/login");
+        }
+      })
+      .catch(() => {
+        setIsLoading(false);
+        navigate("/login");
+      });
+
+    return () => {
+      setIsLoading(false);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Thêm navigate vào dependency array để đảm bảo hook không bị lỗi
+
   if (isLoading) {
     return <Loading />;
   }
