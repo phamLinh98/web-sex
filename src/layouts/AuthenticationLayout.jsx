@@ -5,7 +5,7 @@ import Loading from "../components/Loading";
 
 export default function AuthenticationLayout() {
   // do AuthenticationLayout boc toan bo route du an
-  // const {setLoginUser} = useContext(MenuContext);
+  // const { loginUser, setLoginUser } = useContext(LoginUserContext);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,6 +22,8 @@ export default function AuthenticationLayout() {
           setIsLoading(false);
           navigate("/login");
         }
+        setIsLoading(false);
+        navigate("/login");
       })
       .catch(() => {
         setIsLoading(false);

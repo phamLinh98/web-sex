@@ -21,13 +21,12 @@ export async function loginWithAccount(email, password) {
     {
       email: email,
       password: password,
-      withCredentials: true,
     },
     {
       headers: {
-        ContentType: "application/json",
+        ContentType: 'application/json',
       },
-    }
+    },
   );
 }
 
