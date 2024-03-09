@@ -3,7 +3,8 @@ import { Router } from "express";
 const apiRoute = Router();
 
 apiRoute.get("/users", (req, res) => {
-  res.send("Users Route");
+  const loginUser = req.loginUser;
+  res.send({ loginUser });
 });
 
 export default apiRoute;

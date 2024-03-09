@@ -17,7 +17,7 @@ export const authentcatedMiddleware = (req, res, next) => {
   if (isLogin) {
     next();
   } else {
-    res.send("You are not authenticated. Please login first");
+    res.status(401).json({ message: "Unauthorized" });
   }
 };
 
