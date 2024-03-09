@@ -5,6 +5,8 @@ import Layout from "../layouts/Layout";
 import GraphControl from "../graphControl/graph";
 import AuthentcationLayout from "../layouts/AuthenticationLayout";
 import LoginApp from "../login/LoginApp";
+import UseCallBack from "../demo/useCallback";
+import Register from "../login/Register";
 
 const routesConfigs = [
   {
@@ -12,8 +14,16 @@ const routesConfigs = [
     errorElement: <ErrorPage />,
     children: [
       {
+        path: "demo",
+        element: <UseCallBack />,
+      },
+      {
         path: "login",
         element: <LoginApp />,
+      },
+      {
+        path: "/register",
+        element: <Register />,
       },
       {
         element: <AuthentcationLayout />,
