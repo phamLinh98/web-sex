@@ -5,7 +5,8 @@ import Loading from "../components/Loading";
 
 export default function AuthenticationLayout() {
   // do AuthenticationLayout boc toan bo route du an
-  // const { loginUser, setLoginUser } = useContext(LoginUserContext);
+  // const {setLoginUser} = useContext(MenuContext);
+  //const [loginUser, setLoginUser] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 

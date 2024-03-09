@@ -53,6 +53,10 @@ export function useLogin() {
     errorMessage: error,
   };
 }
+// export function useAuthenticated() {
+//   const navigate = useNavigate();
+// }
+
 export default function LoginApp() {
   // add custom hook useLogin to here
   const { handleLoginWithAccount, handleLoginWithGoogle, isLoading, errorMessage } =
