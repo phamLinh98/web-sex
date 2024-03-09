@@ -3,7 +3,8 @@ import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
-import { loginSSO } from "../services/AuthServices";
+import { loginWithSSO } from "../services/AuthServices";
+import { loginWithAccount } from "../services/AuthServices";
 
 // custom hook check login for Login
 export function useCheckLogin() {
@@ -31,16 +32,31 @@ export default function LoginApp() {
   // add custom hook checklogin to here
   const { auth, isLoading, setIsLoading } = useCheckLogin();
 
+  // solve login with google
   const handleLoginWithGoogle = async () => {
     try {
       setIsLoading(true);
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       const accessToken = await auth.currentUser.getIdToken();
-      await loginSSO(accessToken);
+      await loginWithSSO(accessToken);
       setIsLoading(false);
       // khong nen luu lai accessToken => de bi hack token
       // localStorage.setItem("accessToken", accessToken);
+    } catch (error) {
+      setIsLoading(false);
+      localStorage.clear();
+    }
+  };
+  // solve login with password
+  const handleLoginWithAccount = async (e) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      const email = e.target.email.value;
+      const password = e.target.password.value;
+      await loginWithAccount(email, password);
+      setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       localStorage.clear();
@@ -55,7 +71,10 @@ export default function LoginApp() {
     <div className="flex justify-center items-center h-screen">
       <div className="flex flex-col w-96 space-y-4">
         <h1 className="text-3xl font-bold text-center">Login</h1>
-        <form className="flex flex-col space-y-4">
+        <form
+          onSubmit={handleLoginWithAccount}
+          className="flex flex-col space-y-4"
+        >
           <input
             className="border border-gray-300 p-2 rounded"
             type="text"
