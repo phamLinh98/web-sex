@@ -14,7 +14,7 @@ export async function loginWithSSO(accessToken) {
 }
 
 export async function loginWithAccount(email, password) {
-  const api = "http://localhost:3344/sso-login";
+  const api = "http://localhost:3344/login";
   axios.defaults.withCredentials = true;
   await axios.post(
     api,

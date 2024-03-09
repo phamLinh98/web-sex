@@ -44,6 +44,7 @@ export default function LoginApp() {
       // khong nen luu lai accessToken => de bi hack token
       // localStorage.setItem("accessToken", accessToken);
     } catch (error) {
+      console.log(error);
       setIsLoading(false);
       localStorage.clear();
     }
