@@ -30,3 +30,10 @@ export async function loginWithAccount(email, password) {
     }
   );
 }
+
+export async function getUserInfo() {
+  const api = "http://localhost:3344/api/users";
+  axios.defaults.withCredentials = true;
+  const response = await axios.get(api);
+  return response.data;
+}
