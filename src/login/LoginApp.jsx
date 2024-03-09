@@ -9,7 +9,7 @@ export default function LoginApp() {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
     const accessToken = await auth.currentUser.getIdToken();
-    //localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('accessToken', accessToken);
   };
   useEffect(() => {
     const unSub = auth.onIdTokenChanged(async (user) => {
