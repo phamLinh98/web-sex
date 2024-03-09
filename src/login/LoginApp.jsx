@@ -3,7 +3,9 @@ import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
+import { loginSSO } from "../services/AuthServices";
 
+// custom hook check login for Login
 export function useCheckLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -22,17 +24,27 @@ export function useCheckLogin() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return { auth, isLoading };
+  return { auth, isLoading, setIsLoading };
 }
 
 export default function LoginApp() {
-  const { auth, isLoading } = useCheckLogin();
+  // add custom hook checklogin to here
+  const { auth, isLoading, setIsLoading } = useCheckLogin();
 
   const handleLoginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-    const accessToken = await auth.currentUser.getIdToken();
-    localStorage.setItem('accessToken', accessToken);
+    try {
+      setIsLoading(true);
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      const accessToken = await auth.currentUser.getIdToken();
+      await loginSSO(accessToken);
+      setIsLoading(false);
+      // khong nen luu lai accessToken => de bi hack token
+      // localStorage.setItem("accessToken", accessToken);
+    } catch (error) {
+      setIsLoading(false);
+      localStorage.clear();
+    }
   };
   // neu isLoading dc bat thi in ra man hinh Loading ...
   if (isLoading) {
