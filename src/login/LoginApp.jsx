@@ -11,6 +11,10 @@ export function useLogin() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  if (loginUser) {
+    navigate("/graph");
+  }
   // solve login with password
   const handleLoginWithAccount = async (e) => {
     e.preventDefault();
@@ -52,6 +56,10 @@ export function useLogin() {
     errorMessage: error,
   };
 }
+// export function useAuthenticated() {
+//   const navigate = useNavigate();
+// }
+
 export default function LoginApp() {
   // add custom hook useLogin to here
   const {
