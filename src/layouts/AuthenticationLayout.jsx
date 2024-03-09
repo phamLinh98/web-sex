@@ -10,22 +10,24 @@ export default function AuthenticationLayout() {
   const navigate = useNavigate();
   const auth = getAuth();
 
-  useEffect(() => {
-    const unSub = auth.onIdTokenChanged(async (user) => {
-      if (user) {
-        const accessToken = await auth.currentUser.getIdToken();
-        await loginSSO(accessToken);
-        setIsLoading(false);
-        return;
-      }
-      navigate("/login"); // Sử dụng hàm chuyển hướng từ hook useNavigate
-    });
-    return () => {
-      setIsLoading(false);
-      unSub();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth]); // Thêm navigate vào dependency array để đảm bảo hook không bị lỗi
+  // useEffect(() => {
+  //   const unSub = auth.onIdTokenChanged(async (user) => {
+  //     if (user) {
+  //       const accessToken = await auth.currentUser.getIdToken();
+  //       await loginSSO(accessToken);
+  //       setIsLoading(true);
+  //       return;
+  //     }
+  //     // truong hop ko co token cho login lai luon
+  //     setIsLoading(false);
+  //     navigate("/login"); // Sử dụng hàm chuyển hướng từ hook useNavigate
+  //   });
+  //   return () => {
+  //     setIsLoading(false);
+  //     unSub();
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [auth]); // Thêm navigate vào dependency array để đảm bảo hook không bị lỗi
   if (isLoading) {
     return <Loading />;
   }
