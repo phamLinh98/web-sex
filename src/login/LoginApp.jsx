@@ -20,6 +20,7 @@ export function useLogin() {
       const password = e.target.password.value;
       await loginWithAccount(email, password);
       setIsLoading(false);
+      navigate("/graph");
     } catch (error) {
       setError(error.response.data.message);
       setIsLoading(false);
