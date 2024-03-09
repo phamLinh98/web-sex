@@ -1,30 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getUserInfo } from "../services/AuthServices";
-import Loading from "../components/Loading";
+//import Loading from "../components/Loading";
 
 export default function AuthenticationLayout() {
-  // do AuthenticationLayout boc toan bo route du an
-  // const {setLoginUser} = useContext(MenuContext);
-  //const [loginUser, setLoginUser] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  //const { loginUser, setLoginUser } = useContext(LoginUserContext);
   const navigate = useNavigate();
 
-  // Oulet phai dc render bang doan code duoi
   useEffect(() => {
     setIsLoading(true);
     getUserInfo()
       .then((data) => {
-        setIsLoading(false);
         if (data.loginUser.id) {
-          // setLoginUser(data.loginUser);
-          navigate("/login");
+          //setLoginUser(data.loginUser);
         } else {
-          setIsLoading(false);
+         // setLoginUser({});
           navigate("/login");
         }
         setIsLoading(false);
-        navigate("/login");
       })
       .catch(() => {
         setIsLoading(false);
@@ -35,14 +29,12 @@ export default function AuthenticationLayout() {
       setIsLoading(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Thêm navigate vào dependency array để đảm bảo hook không bị lỗi
-
-  if (isLoading) {
-    return <Loading />;
+  }, []);
+  if (!isLoading) {
+    return (
+      <div>
+        <Outlet />
+      </div>
+    );
   }
-  return (
-    <div>
-      <Outlet />
-    </div>
-  );
 }
